@@ -25,7 +25,15 @@ Para utilizar la aplicación sin necesidad de compilar el código, descarga la �
 - **Dependencias:** Requiere [.NET 8.0 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 ## Capturas de Pantalla
-*(Próximamente)*
+
+### Dashboard Principal
+![Dashboard Principal](Screenshots/dashboard.jpeg)
+
+### Pantalla de Inicio (Splash Screen)
+![Pantalla de Inicio](Screenshots/iniciando.jpeg)
+
+### Sección de Créditos y Soporte
+![Créditos](Screenshots/creditos.jpeg)
 
 ---
 
