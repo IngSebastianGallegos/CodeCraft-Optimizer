@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>CodeCraftOptimizer</AssemblyName>
+    <RootNamespace>CodeCraftOptimizer</RootNamespace>
+    <Company>CodeCraftSW</Company>
+    <Product>CodeCraft Optimizer</Product>
+    <Description>Sistema de escaneo y limpieza optimizado para Windows</Description>
+    <Version>1.0.0</Version>
+    <Copyright>© 2026 CodeCraftSW. Todos los derechos reservados.</Copyright>
+    
+    <!-- Optimize for performance -->
+    <TieredCompilation>true</TieredCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <ApplicationIcon>Assets\app_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\**\*.png" />
+  </ItemGroup>
+
+</Project>

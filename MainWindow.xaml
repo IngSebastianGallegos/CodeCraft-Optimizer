@@ -1,0 +1,736 @@
+<Window x:Class="CodeCraftOptimizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CodeCraftOptimizer.ViewModels"
+        Title="CodeCraft Optimizer"
+        Icon="/Assets/Logo_CCOptimizer.png"
+        Width="1100" Height="720"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN SHELL
+    ════════════════════════════════════════════════════════════════ -->
+    <Border CornerRadius="14"
+            Background="{StaticResource BgDeepBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="1"
+            SnapsToDevicePixels="True">
+
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="40" ShadowDepth="0" Opacity="0.6"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ═══════════════════════════════════════════════════
+                 SIDEBAR
+            ═══════════════════════════════════════════════════ -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource SidebarGradient}"
+                    CornerRadius="14,0,0,14"
+                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Title Bar / Brand -->
+                    <StackPanel Grid.Row="0" Margin="20,20,20,10">
+                        <!-- Drag area -->
+                        <Border Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                                Padding="0,0,0,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <!-- Logo mark -->
+                                    <Border Width="42" Height="42" CornerRadius="10"
+                                            HorizontalAlignment="Left" Margin="0,0,0,12"
+                                            Background="White" Padding="4"
+                                            BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                                        <Image Source="/Assets/Logo_CCOptimizer.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+
+                                    <TextBlock Text="CodeCraft" FontSize="18" FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="Optimizer" FontSize="18" FontWeight="Light"
+                                               Foreground="{StaticResource AccentCyanBrush}" Margin="0,-3,0,0"/>
+                                </StackPanel>
+
+                                <!-- Window controls -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                            VerticalAlignment="Top" Margin="0,-4,0,0">
+                                    <Button Content="─" Click="Minimize_Click"
+                                            Width="28" Height="28" FontSize="11"
+                                            Foreground="{StaticResource TextMutedBrush}"
+                                            Background="Transparent" BorderThickness="0"
+                                            Cursor="Hand"/>
+                                    <Button Content="✕" Click="Close_Click"
+                                            Width="28" Height="28" FontSize="11"
+                                            Foreground="{StaticResource TextMutedBrush}"
+                                            Background="Transparent" BorderThickness="0"
+                                            Cursor="Hand"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Height="1" Background="{StaticResource BorderSubtleBrush}" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="N A V E G A C I Ó N" FontSize="10" FontWeight="Bold"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="8,8,0,4"/>
+                    </StackPanel>
+
+                    <!-- Navigation -->
+                    <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,10,0,0">
+                        <RadioButton Style="{StaticResource NavButton}" Content="Dashboard"
+                                     Tag="📊" IsChecked="True"
+                                     Command="{Binding ChangeSectionCommand}" CommandParameter="Dashboard"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="Optimización" Tag="⚡"
+                                     Command="{Binding ChangeSectionCommand}" CommandParameter="Optimization"/>
+                        <RadioButton Style="{StaticResource NavButton}" Content="Acerca de" Tag="✨"
+                                     Command="{Binding ChangeSectionCommand}" CommandParameter="About"/>
+                    </StackPanel>
+
+                    <!-- Footer -->
+                    <StackPanel Grid.Row="2" Margin="20,0,20,16">
+                        <Border Height="1" Background="{StaticResource BorderSubtleBrush}" Margin="0,0,0,12"/>
+                        <TextBlock Text="CodeCraftSW" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="v1.0.0" FontSize="9" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Opacity="0.6"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MAIN CONTENT AREA
+            ═══════════════════════════════════════════════════ -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="28,24">
+                    
+                    <!-- Dashboard View -->
+                    <StackPanel Visibility="{Binding IsDashboardVisible, Converter={StaticResource BoolToVis}}">
+                        <!-- Header -->
+                        <Grid Margin="0,0,0,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                        <TextBlock Text="Dashboard" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="Panel de control del sistema" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <!-- Status Badge -->
+                    <Border Grid.Column="1" CornerRadius="20"
+                            Padding="14,8" VerticalAlignment="Center">
+                        <Border.Background>
+                            <SolidColorBrush Color="{StaticResource BgTertiary}"/>
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="{StaticResource BorderSubtle}"/>
+                        </Border.BorderBrush>
+                        <Border.BorderThickness>1</Border.BorderThickness>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="8" Height="8" Margin="0,0,8,0">
+                                <Ellipse.Fill>
+                                    <SolidColorBrush x:Name="StatusDot" Color="{StaticResource AccentGreen}"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <TextBlock x:Name="StatusLabel"
+                                       Text="{Binding StatusText}"
+                                       FontSize="12" FontWeight="Medium"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ── Stats Cards ── -->
+                <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,20">
+
+                    <!-- Card 1: Files Found -->
+                    <Border CornerRadius="12" Padding="20,18" Margin="0,0,8,0"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="34" Height="34" CornerRadius="8"
+                                        Background="#1500D4FF">
+                                    <TextBlock Text="📁" FontSize="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Archivos"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding FilesFound}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 2: Space Recoverable -->
+                    <Border CornerRadius="12" Padding="20,18" Margin="4,0,4,0"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="34" Height="34" CornerRadius="8"
+                                        Background="#158B5CF6">
+                                    <TextBlock Text="💾" FontSize="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Recuperable"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SpaceRecoverable}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 3: Space Freed -->
+                    <Border CornerRadius="12" Padding="20,18" Margin="4,0,4,0"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="34" Height="34" CornerRadius="8"
+                                        Background="#1500D4FF">
+                                    <TextBlock Text="🧹" FontSize="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Liberado"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding TotalFreed}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentCyanBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Card 4: System Health -->
+                    <Border CornerRadius="12" Padding="20,18" Margin="8,0,0,0"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Border Width="34" Height="34" CornerRadius="8"
+                                        Background="#1510B981">
+                                    <TextBlock Text="🛡" FontSize="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Estado"
+                                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SystemHealth}" FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentGreenBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- ── System Monitor ── -->
+                <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,16">
+                    <!-- CPU -->
+                    <Border Style="{StaticResource PremiumCard}" Padding="16,12" Margin="0,0,8,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#10E8ECF4" Margin="0,0,10,0">
+                                    <TextBlock Text="🖥" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
+                                </Border>
+                                <TextBlock Text="Procesador" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding CpuName}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,0,8"/>
+                            <ProgressBar Style="{StaticResource ModernProgressBar}" Value="{Binding CpuPercent}" Maximum="100"/>
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="Carga" FontSize="10" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding CpuPercent, StringFormat={}{0:0}%}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyanBrush}" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- RAM -->
+                    <Border Style="{StaticResource PremiumCard}" Padding="16,12" Margin="4,0,4,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#10E8ECF4" Margin="0,0,10,0">
+                                    <TextBlock Text="🧠" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
+                                </Border>
+                                <TextBlock Text="Memoria RAM" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding RamUsageText}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                            <ProgressBar Style="{StaticResource ModernProgressBar}" Value="{Binding RamPercent}" Maximum="100"/>
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="Uso" FontSize="10" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding RamPercent, StringFormat={}{0:0}%}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentPurpleBrush}" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Disk -->
+                    <Border Style="{StaticResource PremiumCard}" Padding="16,12" Margin="8,0,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#10E8ECF4" Margin="0,0,10,0">
+                                    <TextBlock Text="💽" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
+                                </Border>
+                                <TextBlock Text="Disco Principal" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding DiskFreeText}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                            <ProgressBar Style="{StaticResource ModernProgressBar}" Value="{Binding DiskPercent}" Maximum="100"/>
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="Libre" FontSize="10" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding DiskFreeText}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentGreenBrush}" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- ── Progress Section ── -->
+                <Border Grid.Row="3" CornerRadius="12" Padding="24,18" Margin="0,0,0,20"
+                        Background="{StaticResource BgSecondaryBrush}"
+                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Progreso de operación"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Progress, StringFormat={}{0:F0}%}"
+                                       FontSize="13" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentCyanBrush}"/>
+                        </Grid>
+                        <ProgressBar Style="{StaticResource ModernProgressBar}"
+                                     Value="{Binding Progress}" Maximum="100"/>
+                        <TextBlock Text="{Binding LastScanResult}"
+                                   FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Action Buttons ── -->
+                <Border Grid.Row="4" CornerRadius="12" Padding="16,12" Margin="0,0,0,12"
+                        Background="{StaticResource BgSecondaryBrush}"
+                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Content="⊙  Escaneo"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding ScanCommand}"
+                                Margin="0,0,8,0"/>
+                        <Button Grid.Column="1" Content="⧖  Limpieza rápida"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding QuickCleanCommand}"
+                                Margin="4,0,4,0"/>
+                        <Button Grid.Column="2" Content="⛏  Limpieza profunda"
+                                Style="{StaticResource DangerButton}"
+                                Command="{Binding DeepCleanCommand}"
+                                Margin="8,0,8,0"/>
+                        <Button Grid.Column="3" Content="💽  Desfragmentar"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding DefragCommand}"
+                                Margin="4,0,0,0"/>
+
+                        <!-- Cancel button, only visible during operation -->
+                        <Button Grid.Column="4" Content="✕  Cancelar"
+                                Foreground="{StaticResource TextSecondaryBrush}"
+                                Background="Transparent" BorderThickness="0"
+                                FontSize="12" Cursor="Hand" Padding="16,8"
+                                Command="{Binding CancelCommand}"
+                                Visibility="{Binding IsOperationRunning, Converter={StaticResource BoolToVis}}"
+                                Margin="12,0,0,0"/>
+                    </Grid>
+                </Border>
+
+                <!-- ── Activity Summary Panel ── -->
+                <Grid Grid.Row="5" Margin="0,4,0,0" MinHeight="180">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Detailed Activity Log -->
+                    <Border Grid.Column="0" CornerRadius="12" Padding="16,12" Margin="0,0,12,0"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Registro de Actividad" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="4,0,0,8"/>
+                            <ListBox Grid.Row="1" ItemsSource="{Binding Logs}" 
+                                     Background="Transparent" BorderThickness="0"
+                                     HorizontalContentAlignment="Stretch"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     x:Name="LogList">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <ContentPresenter />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" Foreground="{Binding Color}" FontWeight="Bold" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Time}" Foreground="{StaticResource TextMutedBrush}" FontSize="10" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Message}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+
+                    <!-- Session Summary Cards -->
+                    <StackPanel Grid.Column="1">
+                        <Border CornerRadius="12" Padding="16" Margin="0,0,0,12" Background="{StaticResource BgSecondaryBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Última Acción" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                <TextBlock Text="{Binding LastActionType}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AccentCyanBrush}" Margin="0,2,0,0"/>
+                                <TextBlock Text="{Binding LastActionTime}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="12" Padding="16" Background="{StaticResource BgSecondaryBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Total Liberado" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                <TextBlock Text="{Binding TotalFreed}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AccentGreenBrush}" Margin="0,2,0,0"/>
+                                <TextBlock Text="En esta sesión" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                    </StackPanel> <!-- End Dashboard View -->
+
+                <!-- ── OPTIMIZATION VIEW ── -->
+                <StackPanel Margin="0" Visibility="{Binding IsOptimizationVisible, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Margin="0,0,0,24">
+                        <TextBlock Text="Optimización de Inicio" FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="Gestiona los programas que arrancan con Windows para acelerar el encendido."
+                                   FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <Border CornerRadius="12" Padding="20" MinHeight="400"
+                            Background="{StaticResource BgSecondaryBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Aplicaciones de Inicio Detectadas" FontSize="14" FontWeight="SemiBold" 
+                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16"/>
+                            <ItemsControl ItemsSource="{Binding StartupItems}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="8" Margin="0,0,0,8" Padding="16,12" 
+                                                    Background="#0AFFFFFF" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <!-- Icon Placeholder -->
+                                                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8" Background="#15FFFFFF" Margin="0,0,16,0">
+                                                        <TextBlock Text="⚙" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    </Border>
+
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Publisher}" FontSize="11" Foreground="{StaticResource AccentCyanBrush}" FontWeight="SemiBold" Margin="0,0,8,0"/>
+                                                            <TextBlock Text="•" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,8,0"/>
+                                                            <TextBlock Text="{Binding Source}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding Command}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" TextTrimming="CharacterEllipsis" Opacity="0.6"/>
+                                                    </StackPanel>
+                                                    
+                                                    <!-- Action Toggle -->
+                                                    <Button Grid.Column="2" Padding="12,6" Cursor="Hand"
+                                                            Command="{Binding DataContext.ToggleStartupCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}">
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="BtnBorder" CornerRadius="6" BorderThickness="1" 
+                                                                        Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                                                                    <StackPanel Orientation="Horizontal" Margin="8,4">
+                                                                        <TextBlock x:Name="StatusDot" Text="●" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                                        <StackPanel VerticalAlignment="Center">
+                                                                            <TextBlock x:Name="StatusTxt" Text="Habilitado" FontSize="11" FontWeight="Bold"/>
+                                                                            <TextBlock Text="CLICK PARA CAMBIAR" FontSize="8" Opacity="0.7"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                                        <Setter TargetName="BtnBorder" Property="Background" Value="#1510B981"/>
+                                                                        <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#3010B981"/>
+                                                                        <Setter TargetName="StatusDot" Property="Foreground" Value="#FF10B981"/>
+                                                                        <Setter TargetName="StatusTxt" Property="Foreground" Value="#FF10B981"/>
+                                                                        <Setter TargetName="StatusTxt" Property="Text" Value="HABILITADO"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                                        <Setter TargetName="BtnBorder" Property="Background" Value="#15EF4444"/>
+                                                                        <Setter TargetName="BtnBorder" Property="BorderBrush" Value="#30EF4444"/>
+                                                                        <Setter TargetName="StatusDot" Property="Foreground" Value="#FFEF4444"/>
+                                                                        <Setter TargetName="StatusTxt" Property="Foreground" Value="#FFEF4444"/>
+                                                                        <Setter TargetName="StatusTxt" Property="Text" Value="DESHABILITADO"/>
+                                                                    </DataTrigger>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="BtnBorder" Property="Opacity" Value="0.8"/>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel> <!-- End Optimization View -->
+
+                <!-- ── ABOUT VIEW ── -->
+                <StackPanel Margin="0" Visibility="{Binding IsAboutVisible, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Margin="0,0,0,24">
+                        <TextBlock Text="Sobre el Programa" FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="Información técnica y soporte de CodeCraft Optimizer."
+                                   FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                    
+                    <Grid Margin="28,24,28,24">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <Trigger Property="Visibility" Value="Visible">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.4"/>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)" From="20" To="0" Duration="0:0:0.4">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.RenderTransform>
+                        <TranslateTransform Y="0"/>
+                    </Grid.RenderTransform>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="0,0,0,32" Orientation="Horizontal">
+                        <Border Background="{StaticResource BgDeepBrush}" CornerRadius="12" Padding="12" Margin="0,0,20,0"
+                                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1">
+                            <Image Source="/Assets/Logo_CCOptimizer.png" Height="80" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Acerca de" FontSize="28" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="CodeCraft Optimizer v1.0" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource AccentCyanBrush}" Margin="0,2,0,4"/>
+                            <TextBlock Text="Información sobre los creadores y distribuidores del sistema."
+                                       FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            
+                            <!-- Documentación Links -->
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Border Background="#1500F2FF" CornerRadius="4" Padding="8,4" Margin="0,0,12,0">
+                                    <TextBlock FontSize="11">
+                                        <Hyperlink NavigateUri="README.md" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentCyanBrush}">📖 Guía de Uso</Hyperlink>
+                                    </TextBlock>
+                                </Border>
+                                <Border Background="#158B5CF6" CornerRadius="4" Padding="8,4">
+                                    <TextBlock FontSize="11">
+                                        <Hyperlink NavigateUri="TECHNICAL_SPECS.md" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentPurpleBrush}">⚙️ Especificaciones</Hyperlink>
+                                    </TextBlock>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="2">
+                        <!-- Desarrollador -->
+                        <Border Style="{StaticResource PremiumCard}" Margin="0,0,10,0" VerticalAlignment="Top">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <TextBlock Text="&lt;/&gt;" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyanBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="DESARROLLADOR" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                                    <Border Background="Transparent" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <Image Source="/Assets/Logo CodeCraftSW.png" Height="64" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+                                    <TextBlock Text="Autor del Código" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <Border Height="1" Background="{StaticResource BorderSubtleBrush}" Margin="0,8,0,16"/>
+                                
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="75"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Email:" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+                                        <Hyperlink NavigateUri="mailto:soporte@codecraftsw.com" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentCyanBrush}">soporte@codecraftsw.com</Hyperlink>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Teléfono:" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,8">
+                                        <Hyperlink NavigateUri="tel:6648434770" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource TextSecondaryBrush}">6648434770</Hyperlink>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Web:" Foreground="{StaticResource TextMutedBrush}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1">
+                                        <Hyperlink NavigateUri="https://codecraftsw.com" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentCyanBrush}">codecraftsw.com</Hyperlink>
+                                    </TextBlock>
+                                </Grid>
+
+                                <!-- Redes Sociales -->
+                                <TextBlock Text="REDES SOCIALES" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="0,0,20,0" Cursor="Hand">
+                                        <Hyperlink NavigateUri="https://facebook.com/codecraftsw" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="#1877F2">Facebook</Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock Cursor="Hand">
+                                        <Hyperlink NavigateUri="https://instagram.com/codecraftsw" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="#E1306C">Instagram</Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Distribuidor -->
+                        <Border Style="{StaticResource PremiumCard}" Margin="10,0,0,0" VerticalAlignment="Top">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <TextBlock Text="🏢" FontSize="12" Foreground="{StaticResource AccentPurpleBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="DISTRIBUIDOR" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                                    <Border Background="Transparent" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <Image Source="/Assets/Logo ClickTj.png" Height="64" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+                                    <TextBlock Text="Soporte Comercial" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <Border Height="1" Background="{StaticResource BorderSubtleBrush}" Margin="0,8,0,16"/>
+                                
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="75"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Email:" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+                                        <Hyperlink NavigateUri="mailto:ventas@clicktj.com" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentPurpleBrush}">ventas@clicktj.com</Hyperlink>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Teléfono:" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,8">
+                                        <Hyperlink NavigateUri="tel:6648434770" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource TextSecondaryBrush}">6648434770</Hyperlink>
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Web:" Foreground="{StaticResource TextMutedBrush}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1">
+                                        <Hyperlink NavigateUri="https://clicktj.com" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="{StaticResource AccentPurpleBrush}">clicktj.com</Hyperlink>
+                                    </TextBlock>
+                                </Grid>
+
+                                <!-- Redes Sociales -->
+                                <TextBlock Text="REDES SOCIALES" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="0,12,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="0,0,20,0" Cursor="Hand">
+                                        <Hyperlink NavigateUri="https://facebook.com/clicktjoficial" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="#1877F2">Facebook</Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock Cursor="Hand">
+                                        <Hyperlink NavigateUri="https://instagram.com/seo.clicktj" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None" Foreground="#E1306C">Instagram</Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </Grid>
+                </StackPanel> <!-- End About View -->
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>
